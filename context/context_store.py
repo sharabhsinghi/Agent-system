@@ -83,6 +83,10 @@ class ContextStore:
         })
         self.save()
 
+    def is_initialized(self) -> bool:
+        """Returns True if the init pass has already been run for this context."""
+        return bool(self._data.get("initialized", False))
+
     def summary_for_agents(self) -> str:
         """Returns a compact context summary to inject into agent prompts."""
         features = self._data.get("features", [])

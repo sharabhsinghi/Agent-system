@@ -14,6 +14,7 @@ from agents.backend_agent import BackendAgent
 from agents.frontend_agent import FrontendAgent
 from agents.code_review_agent import CodeReviewAgent
 from agents.qa_agent import QAAgent
+from agents.init_agent import InitAgent
 from context.context_store import ContextStore
 from tools.repo_tools import RepoTools
 
@@ -30,6 +31,24 @@ class OrchestratorAgent:
         self.frontend = FrontendAgent()
         self.code_review = CodeReviewAgent()
         self.qa = QAAgent()
+        self.init_agent = InitAgent()
+
+    def run_initialization(self):
+        """Analyse the repo and build the base context. Must run before any iteration."""
+        print("\n🏗️   Initialising project context...")
+        print("-" * 50)
+
+        repo_structure = self.repo.scan_structure()
+        key_files = self.repo.read_key_files()
+
+        self.init_agent.initialize(
+            repo_structure=repo_structure,
+            key_files=key_files,
+            context=self.context,
+        )
+
+        print("\n✅  Initialisation complete — context is ready.")
+        print("    Run the orchestrator again (without --init) to start iteration 1.")
 
     def run_iteration(self, feedback: str = ""):
         iteration_num = self.context.increment_iteration()
